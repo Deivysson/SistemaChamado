@@ -5,9 +5,11 @@ import { FiPlusCircle } from "react-icons/fi";
 
 import { AuthContext } from "../../contexts/auth";
 import { db } from "../../services/firebaseConnection";
-import { collection, getDocs, getDoc, doc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, addDoc } from "firebase/firestore";
 
 import './new.css';
+
+import { toast } from "react-toastify";
 
 const listRef = collection(db, "customers");
 
@@ -35,7 +37,7 @@ export default function New() {
                     })
                 })
 
-                if(snapshot.doc.size === 0){
+                if(snapshot.docs.size === 0){
                     console.log("Erro ao buscar os clientes")
                     setCustomers([ { id: '1', nomeFantasia: 'Freela'}])
                     setLoadCustomer(false);
@@ -67,28 +69,59 @@ export default function New() {
         setCustomerSelected(e.target.value)
     }
 
+
+    async function handleRegister(e){
+        e.preventDefault();
+
+        //Registrar um chamado
+        await addDoc(collection(db, "chamados"), {
+            created: new Date(),
+            cliente: customers[customerSelected].nomeFantasia,
+            clienteId: customers[customerSelected].id,
+            assunto: assunto,
+            complemento: complemento,
+            status: status,
+            userId: user.uid,
+        })
+        .then(() => {
+            toast.success("Chamado registrado!")
+            setComplemento('')
+            setCustomerSelected(0)
+        })
+        .catch((error) => {
+            toast.error("Erro ao registrar")
+            console.log(error);
+        })
+    }
+
     return(
     <div>
         <Header />
 
     <div className="content">
-            <Title name="Novo chamado">
-                <FiPlusCircle size={25} />
-            </Title>
+        <Title name="Novo chamado">
+            <FiPlusCircle size={25} />
+        </Title>
 
-            <div className="container">
-                <form className="form-profile">
+        <div className="container">
+            <form className="form-profile" onSubmit={handleRegister}>
 
-                    <label>Clientes</label>
-                    {
-                        loadCustomer ? (
-                            <input type="text" disabled={true} value="Carregando..." />
-                        ) : (
-                            <select value={customerSelected} onChange={handleChangeCustomer}>
-
-                            </select>
-                        )
-                    }
+                <label>Clientes</label>
+                {
+                    loadCustomer ? (
+                        <input type="text" disabled={true} value="Carregando..." />
+                    ) : (
+                        <select value={customerSelected} onChange={handleChangeCustomer}>
+                            {customers.map((item, index) => {
+                                return(
+                                    <option key={index} value={index}>
+                                        {item.nomeFantasia}
+                                    </option>
+                                )
+                            })}
+                        </select>
+                    )
+                }
 
                     <label>Assunto</label>
                     <select value={assunto} onChange={handleChangeSelect}>
