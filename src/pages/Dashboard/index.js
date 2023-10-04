@@ -1,5 +1,5 @@
 
-import { useContext } from "react"
+import { useContext, useEffect, useState } from "react"
 import { AuthContext } from "../../contexts/auth"
 
 import Header from "../../components/Header"
@@ -7,15 +7,18 @@ import Title from '../../components/Title'
 import { FiPlus, FiMessageSquare, FiSearch, FiEdit2 } from 'react-icons/fi'
 
 import { Link } from 'react-router-dom'
+import { collection, getDocs, orderBy, limit, startAfter, query } from "firebase/firestore"
+import { db } from "../../services/firebaseConnection"
 
 import './dashboard.css'
 
 export default function Dashboard(){
 const { logout } = useContext(AuthContext);
 
-async function handleLogout(){
-  await logout();
-}
+const [chamados, setChamados] = useState([])
+const [loading, setLoading] = useState(true)
+
+
 
   return(
     <div>
@@ -26,12 +29,22 @@ async function handleLogout(){
         </Title>
 
         <>
-        <Link to="/new" className="new"> 
-          <FiPlus color="#fff" size={25} />
-          Novo chamado
-        </Link>
 
-        <table>
+        {chamados.length === 0 ? (
+          <div className="container dashboard">
+            <span>Nenhum chamado encontrado!</span>
+              <Link to="/new" className="new"> 
+              <FiPlus color="#fff" size={25} />
+                Novo chamado
+              </Link>
+          </div>
+        ) : (
+          <>
+           <Link to="/new" className="new"> 
+            <FiPlus color="#fff" size={25} />
+              Novo chamado
+            </Link> 
+            <table>
           <thead>
             <tr>
               <th scope="col">Cliente</th>
@@ -41,7 +54,9 @@ async function handleLogout(){
               <th scope="col">#</th>
             </tr>
           </thead>
+
           <tbody>
+
             <tr>
               <td data-label="Cliente">Mercado</td>
               <td data-label="Assunto">Suporte</td>
@@ -60,8 +75,13 @@ async function handleLogout(){
                 </button>
               </td>
             </tr>
+
           </tbody>
         </table>
+          </>
+        )}
+
+        
         </>
 
       </div>
