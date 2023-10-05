@@ -12,13 +12,55 @@ import { db } from "../../services/firebaseConnection"
 
 import './dashboard.css'
 
+const listRef = collection(db, "chamados")
+
 export default function Dashboard(){
 const { logout } = useContext(AuthContext);
 
 const [chamados, setChamados] = useState([])
 const [loading, setLoading] = useState(true)
+const [isEmpty, setIsEmpty] = useState(false)
 
 
+useEffect(() => {
+  async function loadChamados(){
+    const q = query(listRef, orderBy('created', 'desc'), limit(5));
+
+    const querySnapshot = await getDocs(q)
+    await updateState(querySnapshot)
+
+    setLoading(false);
+  }
+
+  loadChamados();
+
+  return () => { }
+}, [])
+
+async function updateState(querySnapshot){
+  const isCollectionEmpty = querySnapshot.size === 0;
+
+  if(!isCollectionEmpty){
+    let lista = [];
+
+    querySnapshot.forEach((doc) => {
+      lista.push({
+        id: doc.id,
+        assunto: doc.data().assunto,
+        cliente: doc.data().cliente,
+        clienteId: doc.data().clienteId,
+        created: doc.data().created,
+        status: doc.data().status,
+        complemento: doc.data().complemento,
+      })
+    })
+
+    setChamados(chamados => [...chamados, ...lista] )
+
+  }else{
+    setIsEmpty(true);
+  }
+}
 
   return(
     <div>
@@ -57,12 +99,14 @@ const [loading, setLoading] = useState(true)
 
           <tbody>
 
-            <tr>
-              <td data-label="Cliente">Mercado</td>
-              <td data-label="Assunto">Suporte</td>
+            {chamados.map((item, index) => {
+              return(
+                <tr>
+              <td data-label="Cliente">{item.cliente}</td>
+              <td data-label="Assunto"> {item.assunto} </td>
               <td data-label="Status">
                 <span className="badge" style={{backgroundColor: '#999'}}>
-                  Em aberto
+                  {item.status}
                 </span>
               </td>
               <td data-label="Cadastrado">14/09/2023</td>
@@ -75,6 +119,8 @@ const [loading, setLoading] = useState(true)
                 </button>
               </td>
             </tr>
+              )
+            })}
 
           </tbody>
         </table>
