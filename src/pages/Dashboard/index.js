@@ -10,6 +10,8 @@ import { Link } from 'react-router-dom'
 import { collection, getDocs, orderBy, limit, startAfter, query } from "firebase/firestore"
 import { db } from "../../services/firebaseConnection"
 
+import { format } from "date-fns"
+
 import './dashboard.css'
 
 const listRef = collection(db, "chamados")
@@ -27,6 +29,8 @@ useEffect(() => {
     const q = query(listRef, orderBy('created', 'desc'), limit(5));
 
     const querySnapshot = await getDocs(q)
+    setChamados([]);
+
     await updateState(querySnapshot)
 
     setLoading(false);
@@ -50,6 +54,7 @@ async function updateState(querySnapshot){
         cliente: doc.data().cliente,
         clienteId: doc.data().clienteId,
         created: doc.data().created,
+        createdFormat: format(doc.data().created.toDate(), 'dd/MM/yyyy'),
         status: doc.data().status,
         complemento: doc.data().complemento,
       })
@@ -61,6 +66,10 @@ async function updateState(querySnapshot){
     setIsEmpty(true);
   }
 }
+
+
+
+
 
   return(
     <div>
@@ -109,7 +118,7 @@ async function updateState(querySnapshot){
                   {item.status}
                 </span>
               </td>
-              <td data-label="Cadastrado">14/09/2023</td>
+              <td data-label="Cadastrado"> {item.createdFormat} </td>
               <td data-label="#">
                 <button className="action" style={{ backgroundColor: '#3583f6'}}>
                     <FiSearch color= '#FFF' size={17} />
