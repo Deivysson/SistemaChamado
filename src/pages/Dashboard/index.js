@@ -67,7 +67,23 @@ async function updateState(querySnapshot){
   }
 }
 
+if(loading){
+  return(
+    <div>
+      <Header />
 
+      <div className="content">
+        <Title name="Tickets">
+          <FiMessageSquare size={25} />
+        </Title>
+
+        <div className="container dashboard">
+          <span>Buscando chamados...</span>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 
 
