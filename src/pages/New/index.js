@@ -7,6 +7,8 @@ import { AuthContext } from "../../contexts/auth";
 import { db } from "../../services/firebaseConnection";
 import { collection, getDocs, getDoc, doc, addDoc } from "firebase/firestore";
 
+import { useParams } from "react-router-dom";
+
 import './new.css';
 
 import { toast } from "react-toastify";
@@ -15,6 +17,7 @@ const listRef = collection(db, "customers");
 
 export default function New() {
     const { user } = useContext(AuthContext);
+    const { id } = useParams();
 
     const [customers, setCustomers] = useState([])
     const [ loadCustomer, setLoadCustomer ] = useState(true);
@@ -46,6 +49,11 @@ export default function New() {
 
                 setCustomers(lista);
                 setLoadCustomer(false);
+
+                if(id){
+                    loadId(lista);
+                }
+
             })
             .catch((error) => {
                 console.log("Erro ao buscar os clientes", error)
@@ -55,7 +63,16 @@ export default function New() {
         }
 
         loadCustomer();
-    }, [])
+    }, [id])
+
+    async function loadId(lista){
+        const docRef = doc(db, "chamados", id);
+        await getDoc(docRef)
+        .then((snapshot) => {
+            setAssunto(snapshot.data().assunto)
+        })
+    }
+
 
     function handleOptionChange(e){
         setStatus(e.target.value);
