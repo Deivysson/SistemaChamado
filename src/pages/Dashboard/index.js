@@ -11,6 +11,7 @@ import { collection, getDocs, orderBy, limit, startAfter, query } from "firebase
 import { db } from "../../services/firebaseConnection"
 
 import { format } from "date-fns"
+import Modal from "../../components/Modal"
 
 import './dashboard.css'
 
@@ -181,6 +182,9 @@ if(loading){
         </>
 
       </div>
+
+    <Modal />       
+
     </div>
   )
 }
