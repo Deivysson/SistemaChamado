@@ -27,6 +27,9 @@ const [isEmpty, setIsEmpty] = useState(false)
 const [lastDocs, setLastDocs] = useState()
 const [loadingMore, setLoadingMore] = useState(false);
 
+const [showPostModal, setShowPostModal] = useState(false);
+const [detail, setDetail] = useState()
+
 
 useEffect(() => {
   async function loadChamados(){
@@ -86,6 +89,11 @@ async function handleMore(){
   const querySnapshot = await getDocs(q);
   await updateState(querySnapshot);
 
+}
+
+function toggleModal(item) {
+  setShowPostModal(!showPostModal)
+  setDetail(item)
 }
 
 
@@ -158,7 +166,7 @@ if(loading){
               </td>
               <td data-label="Cadastrado"> {item.createdFormat} </td>
               <td data-label="#">
-                <button className="action" style={{ backgroundColor: '#3583f6'}}>
+                <button className="action" style={{ backgroundColor: '#3583f6'}} onClick={ () => toggleModal(item)} >
                     <FiSearch color= '#FFF' size={17} />
                 </button>
                 <Link to={`/new/${item.id}`} className="action" style={{ backgroundColor: '#f6a935'}}>
@@ -183,7 +191,13 @@ if(loading){
 
       </div>
 
-    <Modal />       
+    {showPostModal && (
+      <Modal 
+        conteudo={detail}
+        close={ () => setShowPostModal(!showPostModal) }
+      
+      />
+    )}  
 
     </div>
   )

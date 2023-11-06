@@ -1,11 +1,11 @@
 import { FiX } from 'react-icons/fi'
 import './modal.css';
 
-export default function Modal(){
+export default function Modal( {conteudo, close} ){
     return(
         <div className='modal'>
             <div className='container'>
-                <button className='close'>
+                <button className='close' onClick={close} >
                 <FiX size={25} color="#fff" />
                 Voltar
                 </button>
@@ -15,29 +15,32 @@ export default function Modal(){
 
                     <div className='row'>
                     <span>
-                        Cliente: <i>Mercado</i>
+                        Cliente: <i>{conteudo.cliente}</i>
                     </span>
                     </div>
 
                     <div className='row'>
                         <span>
-                            Assunto: <i>Suporte</i>
+                            Assunto: <i>{conteudo.assunto}</i>
                         </span>
                         <span>
-                            Cadastrado em: <i>22/10/2023</i>
+                            Cadastrado em: <i> {conteudo.createdFormat} </i>
                         </span>
                     </div>
 
                     <div className='row'>
                         <span>
-                            Status: <i>Aberto</i>
+                            Status:
+                             <i>
+                                {conteudo.status}
+                                </i>
                         </span>
                     </div>
 
                     <>
                     <h3>Complemento</h3>
                     <p>
-                        Aqui vai todo o texto
+                        {conteudo.complemento}
                     </p>
                     </>
 
